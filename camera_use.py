@@ -1,5 +1,6 @@
 import cv2 as cv
 
+webcam_index = 0
 
 max_value = 255
 max_value_H = 360//2
@@ -58,7 +59,7 @@ def on_high_V_thresh_trackbar(val):
 
 
 
-cap = cv.VideoCapture(0)
+cap = cv.VideoCapture(webcam_index)
 cv.namedWindow(window_name)
 
 cv.createTrackbar(low_H_name, window_name , low_H, max_value_H, on_low_H_thresh_trackbar)
@@ -69,16 +70,18 @@ cv.createTrackbar(low_V_name, window_name , low_V, max_value, on_low_V_thresh_tr
 cv.createTrackbar(high_V_name, window_name , high_V, max_value, on_high_V_thresh_trackbar)
 
 while True:
+    
     ret, frame = cap.read()
     if not ret:
         break
-
-    frame = cv.cvtColor(frame, cv.COLOR_BGR2HSV)
+    
+    frame_conv = cv.cvtColor(frame, cv.COLOR_BGR2HSV)
     lower_color = (0, 60, 0)
     upper_color = (30, 255, 255)
-    masked = cv.inRange(frame, (low_H, low_S, low_V), (high_H, high_S, high_V))
+    masked = cv.inRange(frame_conv, (low_H, low_S, low_V), (high_H, high_S, high_V))
 
-    cv.imshow("Type q to quit", masked)
+    cv.imshow("Masked", masked)
+    cv.imshow("Raw", frame)
 
     if cv.waitKey(1) == ord('q'):
         break
